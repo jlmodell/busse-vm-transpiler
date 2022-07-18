@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  api:
+    container_name: "vm_transcriptions_api"
+    build: .
+    ports:
+      - "3638:3638"
+    volumes:
+      - /mnt/busse3/fs1:/mnt/busse3/fs1          
+    restart: always
