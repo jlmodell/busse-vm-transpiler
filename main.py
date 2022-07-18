@@ -4,6 +4,7 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from fastapi import FastAPI, BackgroundTasks
 from uvicorn import run
+from check_email import email_checker_for_voicemails_hook
 
 def get_audio_from_file(file_path):
     return AudioSegment.from_file(file_path)
@@ -32,14 +33,21 @@ def transcribe_voicemails():
 
 app = FastAPI()
 
+@app.on_event("startup")
+async def startup():
+    await email_checker_for_voicemails_hook()
+
 @app.get("/")
 def read_root():
     return {"version": "0.0.1"}
+    
 
 @app.get("/voicemails")
-def read_voicemails(background_tasks: BackgroundTasks):
+async def read_voicemails(background_tasks: BackgroundTasks):
     background_tasks.add_task(transcribe_voicemails)
-    return {"message": "messages are being transcribed in the background"}
+    transcribed_messages = await email_checker_for_voicemails_hook()
+
+    return transcribed_messages
 
 
 if __name__ == "__main__":

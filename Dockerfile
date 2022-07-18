@@ -4,6 +4,8 @@ COPY ./requirements.txt ./requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
+RUN apt update && apt install ffmpeg -y
+
 COPY . .
 
 EXPOSE 3638
